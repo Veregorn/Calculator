@@ -31,9 +31,20 @@ function operate(operator,a,b) {
     }
 }
 
-// Testing operate func
-console.log(operate("+","6","3"));
-console.log(operate("-","6","3"));
-console.log(operate("*","6","3"));
-console.log(operate("/","6","3"));
-console.log(operate("8","6","3"));
+// Global variable that stores the actual operation
+let displayValue = "";
+
+// Write the value of 'displayValue' in the display 
+function refreshDisplay() {
+    const data = document.querySelector('#data');
+    data.textContent = displayValue;
+}
+
+// Add a listener associated to each numbered button that refresh variable 'displayValue' and write it on the 'display'
+const digits = document.querySelectorAll(".digit");
+digits.forEach((digit) => {
+    digit.addEventListener('click', () => {
+        displayValue = displayValue + digit.textContent;
+        refreshDisplay();
+    });
+});

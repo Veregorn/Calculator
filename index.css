@@ -1,0 +1,39 @@
+header {
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+}
+
+.display {
+    color: blue;
+}
+
+#data {
+    font-size: 24px;
+    text-align: center;
+}
+
+button {
+    margin: 20px;
+    padding: 20px;
+    font-size: large;
+}
+
+.frame {
+    margin: 0 auto;
+    width: 400px;
+}
+
+.operator {
+    background-color: darkorange;
+}
+
+.equal {
+    background-color: rgb(232, 124, 124);
+}
+
+.clear {
+    background-color: steelblue;
+}
