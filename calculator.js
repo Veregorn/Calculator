@@ -23,9 +23,9 @@ function operate(operator,a,b) {
     } else if (operator == "-") {
         return sub(a,b);
     } else if (operator == "x") {
-        return mult(a,b);
+        return Math.round((mult(a,b) + Number.EPSILON) * 100) / 100;
     } else if (operator == "/") {
-        return div(a,b);
+        return Math.round((div(a,b) + Number.EPSILON) * 100) / 100;
     } else {
         return undefined;
     }
