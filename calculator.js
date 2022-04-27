@@ -98,19 +98,22 @@ operators.forEach((operator) => {
             displayValue = displayValue + operator.textContent;
             refreshDisplay();
         } else {
-            rightOperand = displayValue.slice(index,displayValue.length-1);
-            actualOperation = operator.textContent;
+            rightOperand = displayValue.slice(index,displayValue.length);
+            // Here we need to solve current operation
             if (actualOperation == "/" && rightOperand == "0") { // Evade 0 division
                 result = 0;
                 displayValue = "Error";
                 disableButtons();
-            } else { // Standard case
+            } else {
                 result = operate(actualOperation,leftOperand,rightOperand);
             }
             leftOperand = result.toString();
             rightOperand = "";
             index = leftOperand.length + 1;
-            displayValue = result.toString() + actualOperation;
+            
+            // Now we can go to the next op
+            actualOperation = operator.textContent;
+            displayValue = leftOperand + actualOperation;
             refreshDisplay();
         }
     });
