@@ -45,6 +45,12 @@ function refreshDisplay() {
     data.textContent = displayValue;
 }
 
+// Enable or disable the '.' button of the calculator
+function toggleFloat(bool) {
+    const float = document.querySelector(".float");
+    float.disabled = bool;
+}
+
 // Gives the calculator its initial state
 function resetValues() {
     displayValue = "0";
@@ -53,6 +59,7 @@ function resetValues() {
     rightOperand = "";
     index = 0;
     result = 0;
+    toggleFloat(false); // If we had disabled '.' button, we enable it again
     refreshDisplay();
 }
 
@@ -91,6 +98,7 @@ digits.forEach((digit) => {
 const operators = document.querySelectorAll(".operator");
 operators.forEach((operator) => {
     operator.addEventListener('click', () => {
+        toggleFloat(false);
         if (actualOperation == "") { // There is no other operation to be solved
             leftOperand = displayValue;
             actualOperation = operator.textContent;
@@ -123,6 +131,7 @@ operators.forEach((operator) => {
 const equal = document.querySelector(".equal");
 equal.addEventListener('click', () => {
     rightOperand = displayValue.slice(index,displayValue.length);
+    toggleFloat(false);
     if (rightOperand == "") {
         rightOperand = leftOperand;
     }
@@ -130,7 +139,7 @@ equal.addEventListener('click', () => {
         result = 0;
         displayValue = "Error";
         disableButtons();
-    } else { // Standard case
+    } else if (actualOperation != "") { // Standard case but evading '=' click at first
         result = operate(actualOperation,leftOperand,rightOperand);
         displayValue = result.toString();    
     }
@@ -145,4 +154,12 @@ const clear = document.querySelector(".clear");
 clear.addEventListener('click', () => {
     enableButtons();
     resetValues();
+});
+
+// Add a listener associated to the '.' button
+const float = document.querySelector(".float");
+float.addEventListener('click', () => {
+    displayValue = displayValue + float.textContent;
+    refreshDisplay();
+    toggleFloat(true); //Float numbers can't have mora than one decimal part
 });
