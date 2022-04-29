@@ -69,6 +69,8 @@ function disableButtons() {
     for (let i = 0; i < divButtons.childNodes.length; i++) {
         divButtons.childNodes[i].disabled = true;
     }
+    const clear = document.querySelector(".clear");
+    clear.disabled = false;
 }
 
 function enableButtons() {
@@ -81,55 +83,80 @@ function enableButtons() {
 // Executing the initial state...
 resetValues();
 
-// Add a listener associated to each numbered button that refresh variable 'displayValue' and write it on the 'display'
+// LISTENERS
+
+// Add a listener associated to each numbered button
 const digits = document.querySelectorAll(".digit");
 digits.forEach((digit) => {
-    digit.addEventListener('click', () => {
-        if (displayValue == "0") {
-            displayValue = digit.textContent;
-        } else {
-            displayValue = displayValue + digit.textContent;
-        }
-        refreshDisplay();
-    });
+    digit.addEventListener('click', function(){execDigitPressed(digit)});
 });
 
 // Add a listener associated to each operator
 const operators = document.querySelectorAll(".operator");
 operators.forEach((operator) => {
-    operator.addEventListener('click', () => {
-        toggleFloat(false);
-        if (actualOperation == "") { // There is no other operation to be solved
-            leftOperand = displayValue;
-            actualOperation = operator.textContent;
-            index = leftOperand.length + 1;
-            displayValue = displayValue + operator.textContent;
-            refreshDisplay();
-        } else {
-            rightOperand = displayValue.slice(index,displayValue.length);
-            // Here we need to solve current operation
-            if (actualOperation == "/" && rightOperand == "0") { // Evade 0 division
-                result = 0;
-                displayValue = "Error";
-                disableButtons();
-            } else {
-                result = operate(actualOperation,leftOperand,rightOperand);
-            }
-            leftOperand = result.toString();
-            rightOperand = "";
-            index = leftOperand.length + 1;
-            
-            // Now we can go to the next op
-            actualOperation = operator.textContent;
-            displayValue = leftOperand + actualOperation;
-            refreshDisplay();
-        }
-    });
+    operator.addEventListener('click', function(){execOpPressed(operator)});
 });
 
 // Add a listener associated to the equal symbol
 const equal = document.querySelector(".equal");
-equal.addEventListener('click', () => {
+equal.addEventListener('click', function(){execEqualPressed()});
+
+// Add a listener associated to the 'clear' button
+const clear = document.querySelector(".clear");
+clear.addEventListener('click', function(){execClearPressed()});
+
+// Add a listener associated to the '.' button
+const float = document.querySelector(".float");
+float.addEventListener('click', function(){execFloatPressed()});
+
+// Add a listener associated to the 'DEL' button
+const del = document.querySelector(".del");
+del.addEventListener('click', function(){execDelPressed()});
+
+// LISTENER FUNCTIONS
+
+// Refresh variable 'displayValue' and write it on the 'display'
+function execDigitPressed(digit) {
+    if (displayValue == "0") {
+        displayValue = digit.textContent;
+    } else {
+        displayValue = displayValue + digit.textContent;
+    }
+    refreshDisplay();
+}
+
+// Implement the logic of operator pressed
+function execOpPressed(operator) {
+    toggleFloat(false);
+    if (actualOperation == "") { // There is no other operation to be solved
+        leftOperand = displayValue;
+        actualOperation = operator.textContent;
+        index = leftOperand.length + 1;
+        displayValue = displayValue + operator.textContent;
+        refreshDisplay();
+    } else {
+        rightOperand = displayValue.slice(index,displayValue.length);
+        // Here we need to solve current operation
+        if (actualOperation == "/" && rightOperand == "0") { // Evade 0 division
+            result = 0;
+            displayValue = "Error";
+            disableButtons();
+        } else {
+            result = operate(actualOperation,leftOperand,rightOperand);
+        }
+        leftOperand = result.toString();
+        rightOperand = "";
+        index = leftOperand.length + 1;
+        
+        // Now we can go to the next op
+        actualOperation = operator.textContent;
+        displayValue = leftOperand + actualOperation;
+        refreshDisplay();
+    }
+}
+
+// Resolves the operation
+function execEqualPressed() {
     rightOperand = displayValue.slice(index,displayValue.length);
     toggleFloat(false);
     if (rightOperand == "") {
@@ -147,19 +174,42 @@ equal.addEventListener('click', () => {
     actualOperation = "";
     rightOperand = "";
     leftOperand = result.toString();
-});
+}
 
-// Add a listener associated to the 'clear' button
-const clear = document.querySelector(".clear");
-clear.addEventListener('click', () => {
+// Executes the logic of clear function
+function execClearPressed() {
     enableButtons();
     resetValues();
-});
+}
 
-// Add a listener associated to the '.' button
-const float = document.querySelector(".float");
-float.addEventListener('click', () => {
+// Introduces '.' and disable the button
+function execFloatPressed() {
     displayValue = displayValue + float.textContent;
     refreshDisplay();
     toggleFloat(true); //Float numbers can't have mora than one decimal part
-});
+}
+
+// Executes the logic associated at DEL button
+function execDelPressed() {
+    if (displayValue.length > 1) {
+        if (displayValue.charAt(displayValue.length-1) == ".") { // If '.' is deleted we need to enable the button again
+            toggleFloat(false);
+        }
+        else if (displayValue.charAt(displayValue.length-1) == "/" || displayValue.charAt(displayValue.length-1) == "x" || 
+        displayValue.charAt(displayValue.length-1) == "+" || displayValue.charAt(displayValue.length-1) == "-") {
+            const arrayDisplay = displayValue.split("");
+            if (arrayDisplay.includes(".")) {
+                toggleFloat(true);
+            }
+            actualOperation = "";
+        }
+        displayValue = displayValue.slice(0,displayValue.length-1);
+        refreshDisplay();
+    } else {
+        displayValue = "0";
+        refreshDisplay();
+    }
+    if (index > 0) {
+        index--;
+    }
+}
