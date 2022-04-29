@@ -88,13 +88,13 @@ resetValues();
 // Add a listener associated to each numbered button
 const digits = document.querySelectorAll(".digit");
 digits.forEach((digit) => {
-    digit.addEventListener('click', function(){execDigitPressed(digit)});
+    digit.addEventListener('click', function(){execDigitPressed(digit.textContent)});
 });
 
 // Add a listener associated to each operator
 const operators = document.querySelectorAll(".operator");
 operators.forEach((operator) => {
-    operator.addEventListener('click', function(){execOpPressed(operator)});
+    operator.addEventListener('click', function(){execOpPressed(operator.textContent)});
 });
 
 // Add a listener associated to the equal symbol
@@ -113,14 +113,33 @@ float.addEventListener('click', function(){execFloatPressed()});
 const del = document.querySelector(".del");
 del.addEventListener('click', function(){execDelPressed()});
 
+// KEY LISTENERS
+document.onkeydown = function(e) {
+    const digit = /[0-9]/;
+    const op = /[x/+-]/;
+    if (digit.test(e.key)) {
+        execDigitPressed(e.key);
+    } else if (op.test(e.key)) {
+        execOpPressed(e.key);
+    } else if (e.keyCode == 13) {
+        execEqualPressed();
+    } else if (e.keyCode == 32) {
+        execClearPressed();
+    } else if (e.keyCode == 190) {
+        execFloatPressed();
+    } else if (e.keyCode == 8) {
+        execDelPressed();
+    }
+};
+
 // LISTENER FUNCTIONS
 
 // Refresh variable 'displayValue' and write it on the 'display'
 function execDigitPressed(digit) {
     if (displayValue == "0") {
-        displayValue = digit.textContent;
+        displayValue = digit;
     } else {
-        displayValue = displayValue + digit.textContent;
+        displayValue = displayValue + digit;
     }
     refreshDisplay();
 }
@@ -130,9 +149,9 @@ function execOpPressed(operator) {
     toggleFloat(false);
     if (actualOperation == "") { // There is no other operation to be solved
         leftOperand = displayValue;
-        actualOperation = operator.textContent;
+        actualOperation = operator;
         index = leftOperand.length + 1;
-        displayValue = displayValue + operator.textContent;
+        displayValue = displayValue + operator;
         refreshDisplay();
     } else {
         rightOperand = displayValue.slice(index,displayValue.length);
@@ -149,7 +168,7 @@ function execOpPressed(operator) {
         index = leftOperand.length + 1;
         
         // Now we can go to the next op
-        actualOperation = operator.textContent;
+        actualOperation = operator;
         displayValue = leftOperand + actualOperation;
         refreshDisplay();
     }
