@@ -38,11 +38,14 @@ let actualOperation = "";
 let rightOperand = "";
 let index = 0; // This index tell us in what position of 'displayValue' starts the right operand
 let result = 0; // This is the result of the last operation
+let hist = "0"; // Historic of all ops
 
 // Write the value of 'displayValue' in the display 
 function refreshDisplay() {
     const data = document.querySelector('#data');
     data.textContent = displayValue;
+    const historic = document.querySelector('#hist');
+    historic.textContent = hist;
 }
 
 // Enable or disable the '.' button of the calculator
@@ -59,6 +62,7 @@ function resetValues() {
     rightOperand = "";
     index = 0;
     result = 0;
+    hist = "0";
     toggleFloat(false); // If we had disabled '.' button, we enable it again
     refreshDisplay();
 }
@@ -141,6 +145,7 @@ function execDigitPressed(digit) {
     } else {
         displayValue = displayValue + digit;
     }
+    hist = displayValue;
     refreshDisplay();
 }
 
@@ -152,6 +157,7 @@ function execOpPressed(operator) {
         actualOperation = operator;
         index = leftOperand.length + 1;
         displayValue = displayValue + operator;
+        hist = displayValue;
         refreshDisplay();
     } else {
         rightOperand = displayValue.slice(index,displayValue.length);
@@ -170,6 +176,7 @@ function execOpPressed(operator) {
         // Now we can go to the next op
         actualOperation = operator;
         displayValue = leftOperand + actualOperation;
+        hist += actualOperation;
         refreshDisplay();
     }
 }
@@ -187,7 +194,8 @@ function execEqualPressed() {
         disableButtons();
     } else if (actualOperation != "") { // Standard case but evading '=' click at first
         result = operate(actualOperation,leftOperand,rightOperand);
-        displayValue = result.toString();    
+        displayValue = result.toString();
+        hist += "=";  
     }
     refreshDisplay();
     actualOperation = "";
@@ -223,9 +231,11 @@ function execDelPressed() {
             actualOperation = "";
         }
         displayValue = displayValue.slice(0,displayValue.length-1);
+        hist = displayValue;
         refreshDisplay();
     } else {
         displayValue = "0";
+        hist = displayValue;
         refreshDisplay();
     }
     if (index > 0) {
